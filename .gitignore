@@ -1,0 +1,72 @@
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# IDE / OS specific
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# MLflow
+mlruns/
+mlflow_artifacts/
+
+# Models
+imdb_hybrid_recommender/models/
+*.pth
+
+# Data
+# Keep the README in ml-1m
+mlflow_server/data/imdb/*.tsv
+mlflow_server/data/movielens/ml-1m/*.dat
+mlflow_server/data/processed/
+mlflow/artifacts/0/models
+
+# Logs
+logs/
+*.log
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
+cover/ 
