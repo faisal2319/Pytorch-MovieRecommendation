@@ -1,0 +1,28 @@
+version: "3"
+
+tasks:
+  build:
+    desc: "Build all Docker services"
+    cmds:
+      - docker-compose build
+    silent: false
+
+  up:
+    desc: "Start all services and initialize the database (optionally skip batch recommendations)"
+    vars:
+      NO_PRETRAINED: '{{.NO_PRETRAINED | default "false"}}'
+    cmds:
+      - docker-compose up -d
+      - |
+        if [ "${NO_PRETRAINED}" = "true" ]; then
+          ./init_db.sh --no-pretrained
+        else
+          ./init_db.sh
+        fi
+    silent: false
+
+  down:
+    desc: "Stop all services"
+    cmds:
+      - docker-compose down
+    silent: false

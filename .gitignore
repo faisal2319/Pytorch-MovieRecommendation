@@ -53,6 +53,10 @@ mlflow_server/data/movielens/ml-1m/*.dat
 mlflow_server/data/processed/
 mlflow/artifacts/0/models
 
+# Database artifacts
+database/prediction_artifacts.pkl
+database/processed/
+
 # Logs
 logs/
 *.log

@@ -1,0 +1,67 @@
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: imdb_recommender
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/seed.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mlflow:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password123@postgres:5432/imdb_recommender
+    command: >
+      sh -c "mlflow server \
+      --host 0.0.0.0 \
+      --port 5000 \
+      --backend-store-uri postgresql://postgres:password123@postgres:5432/imdb_recommender \
+      --default-artifact-root /mlflow/artifacts \
+      --serve-artifacts"
+    volumes:
+      - ./mlflow:/mlflow
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:5000/health"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  model_server:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./mlflow:/mlflow
+      - ./model_server:/app/model_server
+      - ./database:/app/database
+      - ./model_server/requirements.txt:/app/requirements.txt
+      - ./model_server:/app/model_server
+    environment:
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+      - DATABASE_URL=postgresql://postgres:password123@postgres:5432/imdb_recommender
+    depends_on:
+      mlflow:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
